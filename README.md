@@ -1,7 +1,7 @@
 # DOCUMENT MANAGEMENT SYSTEM
 
 #### FUNCTIONALITY
-This is the compilation of document management system APIs using python's module flask and database sqlite.
+This is the compilation of document management system REST APIs using python's module flask and database sqlite.
 
 It requires HTTP Basic Authentication to perform following functions:
 * Upload file. One who uploads the file becomes an owner.
