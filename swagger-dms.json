@@ -1,0 +1,283 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a Document management system server.",
+    "version": "1.0.0",
+    "title": "Swagger - Document management system",
+    "contact": {
+      "email": "saboohi.dhawan@gmail.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "documents",
+      "description": "Everything about your Documents"
+    },
+    {
+      "name": "document-users",
+      "description": "Share documents with other users"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/documents": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Create a new document",
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "file",
+            "description": "File object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "File uploaded successfully"
+          },
+          "400": {
+            "description": "Unsupported file extension"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "409": {
+            "description": "File already exists"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Gets list of all documents created by and shared with a user",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/document"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      }
+    },
+    "/documents/:id": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "downloads the document specified by the :id",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/document"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "deletes the document specified by the :id",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Deleted Successfully!"
+          },
+          "400": {
+            "description": "File doesn't exist"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "updates the document specified by the :id",
+        "description": "",
+        "consumes": [
+          "text/plain"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "text",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Deleted Successfully!"
+          },
+          "400": {
+            "description": "File doesn't exist"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      }
+    },
+    "/document-users": {
+      "post": {
+        "tags": [
+          "document-users"
+        ],
+        "summary": "Share a document with a user",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "document-user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "doc_id": {
+                  "type": "integer"
+                },
+                "user_id": {
+                  "type": "integer"
+                }
+              }
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "type": "string",
+            "name": "Authorisation",
+            "description": "Basic base64 encoded \"username:password\""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully shared the file."
+          },
+          "400": {
+            "description": "Invalid Request"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "403": {
+            "description": "Permission Denied!Only owner can share file."
+          },
+          "409": {
+            "description": "File is already shared with the user"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "document": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

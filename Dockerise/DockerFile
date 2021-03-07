@@ -1,0 +1,8 @@
+From python:3.9-slim-buster
+LABEL maintainer "Saboohi Dhawan <saboohi.dhawan@gmail.com>"
+COPY . .
+WORKDIR .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt                                                                          
+EXPOSE 5000
+CMD ["python3", "-u", "./document_manager.py"]
