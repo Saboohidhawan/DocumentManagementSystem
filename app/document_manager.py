@@ -142,21 +142,21 @@ def download_file(doc_id):
 @auth.login_required
 def edit_file(doc_id):
 	"""Edit a file if it's not being edited by other user."""
-	with get_db(DATABASE) as db:
+	if request.data:
+		with get_db(DATABASE) as db:
 	
-		is_valid_file = query_db(db, '''SELECT filename FROM documents WHERE (id) = (?)''',[doc_id], one = True)
-		if not is_valid_file:
-			return jsonify("Invalid file id."), 400
-			
-		is_user_allowed = query_db(db, '''SELECT id FROM document_users WHERE (doc_id, user_id) = (?,?)''',[doc_id, auth.current_user()], one = True)
-		if not is_user_allowed:
-			return jsonify("Access Denied!"), 403
+			is_user_allowed = query_db(db, '''SELECT id FROM document_users WHERE (doc_id, user_id) = (?,?)''',[doc_id, auth.current_user()], one = True)
+			if not is_user_allowed:
+				return jsonify("Access Denied!"), 403
+				
+			is_valid_file = query_db(db, '''SELECT filename FROM documents WHERE (id) = (?)''',[doc_id], one = True)
+			if not is_valid_file:
+				return jsonify("Invalid file id."), 400
+				
+			editing = query_db(db, '''SELECT id FROM document_users WHERE (doc_id, is_editing) = (?,?)''',[doc_id, 1], one = True)
+			if editing:
+				return jsonify("File is being edited."), 409
 
-		editing = query_db(db, '''SELECT id FROM document_users WHERE (doc_id, is_editing) = (?,?)''',[doc_id, 1], one = True)
-		if editing:
-			return jsonify("File is being edited."), 409
-
-		if request.data:
 			filename = is_valid_file[0]
 			run_query(db, ''' UPDATE document_users set is_editing=? WHERE doc_id=? and user_id=? ''', (1, doc_id, auth.current_user()))
 			with open(os.path.join(UPLOAD_FOLDER, filename), "ab") as fp:
@@ -165,7 +165,7 @@ def edit_file(doc_id):
 				fp.write('\n')
 			run_query(db, ''' UPDATE document_users set is_editing=? WHERE doc_id=? and user_id=? ''', (0, doc_id, auth.current_user()))
 			return jsonify("File Edited Successfully!"), 201
-		return jsonify("No new data entered to edit!"), 400
+	return jsonify("No new data entered to edit!"), 400
 
 			
 @app.route("/documents/<doc_id>", methods=["DELETE"])
